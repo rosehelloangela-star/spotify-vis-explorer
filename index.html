@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify 音乐特征探索器</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <h1>🎵 Spotify 百年音乐特征演变探索</h1>
+        <p class="subtitle">交互式探索 1922-2020 音乐数据中的隐藏模式</p>
+    </header>
+ 
+    <main>
+        <div class="control-panel">
+            <div class="filter-group">
+                <label>年份范围: <span id="year-range">1922 - 2020</span></label>
+                <div class="year-inputs">
+                    <input type="number" id="year-start" min="1922" max="2020" value="1922">
+                    <span>至</span>
+                    <input type="number" id="year-end" min="1922" max="2020" value="2020">
+                </div>
+                <div id="range-track" style="position:relative; height:4px; background:#dfe6e9; border-radius:2px; margin-top:8px;"></div>
+            </div>
+            
+            <div class="filter-group">
+                <label>流行度：<span id="popularity-value">0</span>+</label>
+                <input type="range" id="popularity-filter" min="0" max="100" step="1" value="0" style="margin-top: 15px;">
+            </div>
+            <div class="filter-group">
+                <label>显示数量：</label>
+                <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                    <button id="sample-minus" style="padding:4px 10px; cursor:pointer;">-</button>
+                    <span id="sample-count" style="font-weight:bold; width:40px; text-align:center;">5000</span>
+                    <button id="sample-plus" style="padding:4px 10px; cursor:pointer;">+</button>
+                </div>
+                <input type="hidden" id="sample-size" value="5000">
+            </div>
+ 
+            <button id="reset-btn" class="reset-button">重置所有过滤</button>
+        </div>
+ 
+        <div class="vis-container">
+            <div class="chart-wrapper">
+                <h2>特征散点图 <span class="hint">（拖动刷选 | 点击切换维度）</span></h2>
+                <div class="axis-selector">
+                    <label>X轴：
+                        <select id="x-axis">
+                            <option value="danceability">舞蹈性</option>
+                            <option value="energy" selected>能量</option>
+                            <option value="valence">情绪</option>
+                            <option value="tempo">节奏</option>
+                            <option value="acousticness">声学性</option>
+                        </select>
+                    </label>
+                    <label>Y轴：
+                        <select id="y-axis">
+                            <option value="danceability">舞蹈性</option>
+                            <option value="energy">能量</option>
+                            <option value="valence" selected>情绪</option>
+                            <option value="tempo">节奏</option>
+                            <option value="acousticness">声学性</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="scatterplot"></div>
+            </div>
+ 
+            <div class="chart-wrapper">
+                <h2>多维特征对比 <span class="hint">（拖动轴上范围过滤）</span></h2>
+                <div id="parallel-coords"></div>
+                <div class="parallel-hint">
+                    <span class="hint-icon">💡</span>
+                    <span>每条线 = 一首歌，颜色越亮 = 年代越近。在任意轴上<strong>拖动选取范围</strong>，可筛选同时满足多个特征条件的歌曲。</span>
+                </div>
+            </div>
+ 
+            <div class="chart-wrapper full-width">
+                <h2>音乐特征时间演变 <span class="hint">（悬停查看详情）</span></h2>
+                <div id="timeline"></div>
+            </div>
+
+            <div class="chart-wrapper">
+                <h2>Top 10 艺术家 <span class="hint">（当前筛选条件下）</span></h2>
+                <div id="bar-chart"></div>
+            </div>
+
+            <div class="chart-wrapper">
+                <h2>音乐大小调分布 <span class="hint">（Major vs Minor）</span></h2>
+                <div id="donut-chart"></div>
+            </div>
+        </div>
+ 
+        <div id="detail-panel" class="detail-panel hidden" style="max-width: 700px; width: 95%;">
+            <button class="close-btn">×</button>
+            <h3 id="detail-title">歌曲详情</h3>
+            <div style="display: flex; gap: 2rem; align-items: center; margin-top: 1rem;">
+                <div id="detail-content" style="flex: 1; font-size: 14px;"></div>
+                <div id="radar-chart-container" style="width: 250px; height: 250px;"></div>
+            </div>
+        </div>
+ 
+        <div class="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">当前显示：</span>
+                <span id="visible-count" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">已选择：</span>
+                <span id="selected-count" class="stat-value">0</span>
+            </div>
+        </div>
+
+        <div class="chart-wrapper full-width" id="table-container" style="display: none; margin-bottom: 2rem;">
+            <h2>筛选结果明细 (<span id="table-count">0</span> 首) <span style="font-size: 14px; font-weight: normal; color: #ff6b6b;" id="table-warning"></span></h2>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;">
+                    <thead style="position: sticky; top: 0; background: white; box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1); z-index: 10;">
+                        <tr>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">歌曲名称</th>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">艺术家</th>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">年份</th>
+                            <th style="padding: 12px; border-bottom: 2px solid var(--border-color);">流行度</th>
+                        </tr>
+                    </thead>
+                    <tbody id="track-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+ 
+    <footer>
+        <h2>设计文档</h2>
+        <div class="documentation">
+            <section>
+                <h3>📊 研究问题</h3>
+                <p>本可视化探索以下核心问题：</p>
+                <ul>
+                    <li>音乐特征（能量、舞蹈性、情绪等）在过去百年如何演变？</li>
+                    <li>高流行度歌曲是否具有特定的特征组合？</li>
+                    <li>不同时代的音乐风格存在哪些显著差异？</li>
+                </ul>
+            </section>
+        </div>
+    </footer>
+ 
+    <script src="js/scatterplot.js"></script>
+    <script src="js/parallel.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/bubblechart.js"></script> 
+    <script src="js/donutchart.js"></script> 
+    <script src="js/main.js"></script>
+</body>
+</html>

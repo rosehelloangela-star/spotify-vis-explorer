@@ -1,0 +1,355 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+ 
+:root {
+    --primary-color: #1DB954;
+    --secondary-color: #191414;
+    --accent-color: #ff6b6b;
+    --bg-color: #f8f9fa;
+    --text-color: #2d3436;
+    --border-color: #dfe6e9;
+}
+ 
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+ 
+header {
+    background: var(--secondary-color);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+ 
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+ 
+.subtitle {
+    color: #b2b2b2;
+    font-size: 1.1rem;
+}
+ 
+main {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+ 
+.control-panel {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+ 
+.filter-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+}
+ 
+.filter-group span {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+ 
+/* 新增的年份输入框样式 */
+.year-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.year-inputs input {
+    padding: 6px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    width: 80px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.year-inputs input:focus {
+    border-color: var(--primary-color);
+}
+
+.year-inputs span {
+    color: #636e72;
+    font-weight: normal;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border-color);
+    outline: none;
+    -webkit-appearance: none;
+}
+ 
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+ 
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+.parallel-hint {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: #f0faf4;
+    border-left: 3px solid var(--primary-color);
+    border-radius: 0 6px 6px 0;
+    font-size: 12.5px;
+    color: #2d3436;
+    line-height: 1.6;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.hint-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+}
+ 
+.reset-button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+ 
+.reset-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+}
+ 
+.vis-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+ 
+.chart-wrapper {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+ 
+.chart-wrapper.full-width {
+    grid-column: 1 / -1;
+}
+ 
+.chart-wrapper h2 {
+    margin-bottom: 1rem;
+    color: var(--secondary-color);
+    font-size: 1.3rem;
+}
+ 
+.hint {
+    font-size: 0.85rem;
+    color: #636e72;
+    font-weight: 400;
+}
+ 
+.axis-selector {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+ 
+.axis-selector select {
+    padding: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+ 
+.detail-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 90%;
+    z-index: 1000;
+}
+ 
+.detail-panel.hidden {
+    display: none;
+}
+ 
+.close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #636e72;
+}
+ 
+.stats-panel {
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+}
+ 
+.stat-item {
+    text-align: center;
+}
+ 
+.stat-label {
+    display: block;
+    font-size: 0.9rem;
+    color: #636e72;
+}
+ 
+.stat-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+ 
+footer {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 1400px;
+    margin: 2rem auto;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+ 
+.documentation section {
+    margin-bottom: 2rem;
+}
+ 
+.documentation h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+ 
+.documentation h4 {
+    color: var(--secondary-color);
+    margin: 1rem 0 0.5rem;
+}
+ 
+.documentation ul {
+    margin-left: 2rem;
+}
+ 
+.documentation li {
+    margin-bottom: 0.5rem;
+}
+ 
+.documentation a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+ 
+.documentation a:hover {
+    text-decoration: underline;
+}
+ 
+.axis {
+    font-size: 12px;
+}
+ 
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #636e72;
+    shape-rendering: crispEdges;
+}
+ 
+.dot {
+    stroke: white;
+    stroke-width: 1px;
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+ 
+.dot:hover {
+    opacity: 1;
+    stroke-width: 2px;
+}
+ 
+.dot.selected {
+    opacity: 1;
+    stroke: #ff6b6b;
+    stroke-width: 2px;
+}
+ 
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+    opacity: 0.3;
+}
+ 
+.line.highlighted {
+    stroke: var(--accent-color);
+    stroke-width: 2px;
+    opacity: 1;
+}
+ 
+.brush .selection {
+    fill: var(--primary-color);
+    fill-opacity: 0.2;
+    stroke: var(--primary-color);
+}
+ 
+@media (max-width: 968px) {
+    .vis-container {
+        grid-template-columns: 1fr;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+}
