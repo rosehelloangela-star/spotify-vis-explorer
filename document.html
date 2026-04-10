@@ -42,6 +42,7 @@
                     <li><strong>特征演变：</strong> 音乐的核心声学特征（如能量、舞蹈性、情绪、声学性）在 1922 年至 2020 年间发生了怎样的宏观演变趋势？</li>
                     <li><strong>流行度密码：</strong> 高流行度的歌曲是否在某些特征（如高能量、高舞蹈性）上具有共性？</li>
                     <li><strong>多维特征关联：</strong> 一首歌曲的不同属性之间是否存在特定的关联模式（例如：高声学性是否通常伴随低能量）？</li>
+                    <li><strong>个性化特征探索：</strong> 用户如何通过自定义选取感兴趣的维度与数值区间（如筛选出“高舞蹈性”且“低声学性”的歌曲），来精准挖掘符合特定偏好的音乐子集？</li>
                 </ul>
             </section>
 
@@ -49,28 +50,28 @@
                 <h3>🎨 2. 设计决策 (Design Rationale)</h3>
                 <h4>可视化编码的选择</h4>
                 <ul>
-                    <li><strong>散点图 (Scatterplot)：</strong> 用于探索两个数值型变量之间的相关性。X 轴和 Y 轴位置编码特征值，<strong>颜色</strong>编码歌曲发行年份（利用 Viridis 色带展现从过去到现在的渐变），辅助用户发现不同时代的聚集特征。</li>
+                    <li><strong>散点图 (Scatterplot)：</strong> 用于探索两个数值型变量之间的相关性。X 轴和 Y 轴位置编码特征值，<strong>颜色</strong>编码歌曲发行年份（利用 Viridis 色带展现），辅助用户发现不同时代的聚集特征。</li>
                     <li><strong>平行坐标图 (Parallel Coordinates)：</strong> 由于音乐具有多达 7+ 个连续特征，平行坐标图是展示多维数据剖面的最佳选择。每条线代表一首歌曲，便于观察高维空间中的聚类和异常值。</li>
                     <li><strong>面积/折线图 (Timeline)：</strong> 用于表现时间序列上的趋势演变，X轴编码时间，Y轴编码特征均值，直观反映音乐风格随时代的变迁。</li>
-                    <li><strong>雷达图 (Radar Chart)：</strong> 在“按需显示细节”面板中，使用雷达图展示单首歌曲的全貌，其多边形形状能让人瞬间感知该曲目的“多边形战士”属性。</li>
+                    <li><strong>雷达图 (Radar Chart)：</strong> 在“按需显示细节”面板中，使用雷达图展示单首歌曲的全貌，其多边形形状能让人瞬间感知该曲目的具体属性。</li>
                 </ul>
                 
                 <h4>交互技术的应用</h4>
                 <ul>
-                    <li><strong>动态查询过滤器 (Dynamic Queries)：</strong> 顶部的年份输入框和流行度滑块，允许用户快速过滤数据子集，遵循 Shneiderman 的“总览优先，缩放与过滤”原则。</li>
-                    <li><strong>刷选与链接 (Brushing & Linking)：</strong> 这是本项目的核心交互。用户可以在散点图或平行坐标系中框选特定区域（刷选），其他所有视图以及下方的数据表格会<strong>实时同步高亮</strong>对应的歌曲。这极大地增强了跨维度模式发现的能力。</li>
-                    <li><strong>按需显示细节 (Details-on-Demand)：</strong> 悬停（Hover）显示包含精确数值的 Tooltip；点击数据行或散点图节点，可弹窗查看单首歌曲的完整雷达图及元数据。</li>
+                    <li><strong>动态查询过滤器 (Dynamic Queries)：</strong> 通过顶部的年份输入框和流行度滑块，用户可以快速剥离无关数据并锁定感兴趣的子集。这一设计完美契合了“总览优先，缩放与过滤”的可视分析核心准则。</li>
+                    <li><strong>刷选与链接 (Brushing & Linking)：</strong> 用户可以在散点图或平行坐标系中框选特定区域（刷选），其他所有视图以及下方的数据表格会<strong>实时同步高亮</strong>对应的歌曲。这极大地增强了跨维度模式发现的能力。</li>
+                    <li><strong>按需显示细节 (Details-on-Demand)：</strong> 悬停显示包含精确数值的 Tooltip；点击数据行或散点图节点，可弹窗查看单首歌曲的完整雷达图及元数据。</li>
                 </ul>
 
                 <h4>替代方案考量</h4>
-                <p>在设计初期，我曾考虑使用 <strong>3D 散点图</strong> 来展示三个特征，但由于 3D 视图在 2D 屏幕上存在严重的遮挡问题（Occlusion），且透视变形会导致数值读取不准，最终放弃，转而采用支持无限制维度且不丢失个体的<strong>平行坐标图</strong>。对于时间演变，曾考虑过动画散点图（类似 Gapminder），但为了让用户能一次性看清百年全貌，静态的 Timeline 配合 Hover 指示线是更具分析效率的选择。</p>
+                <p>在设计初期，我曾考虑使用 <strong>3D 散点图</strong> 来展示三个特征，但由于 3D 视图在 2D 屏幕上存在严重的遮挡问题（Occlusion），且透视变形会导致数值读取不准，而且衡量音乐的维度太多，3D视图还是无法把它们全都直观的体现。最终放弃，转而采用支持无限制维度且不丢失个体的<strong>平行坐标图</strong>。对于时间演变，曾考虑过动画散点图（类似 Gapminder），但为了让用户能一次性看清百年全貌，静态的 Timeline 配合悬停指示线更具分析效率。</p>
             </section>
 
             <section>
                 <h3>🔗 3. 外部资源引用 (References)</h3>
                 <ul>
-                    <li><strong>数据源：</strong> 数据来源于 Kaggle 的 <a href="https://www.kaggle.com/datasets/yamaerenay/spotify-dataset-19212020-160k-tracks" target="_blank">Spotify Dataset 1921-2020</a>。本应用从中抽取了特征数据进行清洗和预处理。</li>
-                    <li><strong>代码库与技术栈：</strong> 核心可视化主要基于 <strong>D3.js (v7)</strong> 开发。UI 布局采用了原生的 HTML5/CSS3 Grid 布局。</li>
+                    <li><strong>数据源：</strong> 数据来源于 Kaggle 的 <a href="https://www.kaggle.com/datasets/yamaerenay/spotify-dataset-19212020-600k-tracks/data" target="_blank">Spotify Dataset 1921-2020</a>。本应用从中抽取了特征数据进行清洗和预处理。</li>
+                    <li><strong>代码库与技术栈：</strong> 核心可视化主要基于 <strong>D3.js</strong> 开发。UI 布局采用了 HTML5/CSS3 Grid 布局。</li>
                     <li><strong>色彩灵感：</strong> 界面主色调参考了 Spotify 官方的品牌绿（<code>#1DB954</code>），图表配色使用了 D3 内置的色觉无障碍色系（Viridis）。</li>
                 </ul>
             </section>
@@ -79,9 +80,9 @@
                 <h3>⏱️ 4. 开发流程概述 (Development Process)</h3>
                 <p>本项目的开发分为数据预处理、视图独立开发、交互状态管理及 UI 打磨四个阶段。<strong>总耗时约 35 工时</strong>。</p>
                 <ul>
-                    <li><strong>数据处理与视图基础构建（约 10 小时）：</strong> 清洗 CSV 数据，建立 Scatterplot、Timeline 等基础 D3 类，这部分相对顺利。</li>
-                    <li><strong>最耗时环节：多视图刷选与链接联动（约 15 小时）：</strong> 这是技术挑战最大的一环。由于没有使用 Vue/React 等响应式框架，我需要通过原生的 <code>CustomEvent</code> 建立事件总线（Event Bus），以确保在平行坐标系中 Brush 时，散点图、雷达图和数据表格能够高性能地实时更新，同时处理好未选中元素的透明度（Opacity）退散逻辑，避免视觉混乱。</li>
-                    <li><strong>UI/UX 优化与 Bug 修复（约 10 小时）：</strong> 调整响应式布局，将冗杂的双滑块替换为更精确的数字输入框，优化 Tooltip 的边界检测和渲染层级（防遮挡），撰写独立文档页并完成 GitHub Pages 部署。</li>
+                    <li><strong>数据处理与视图基础构建（约 4 小时）：</strong> 清洗 CSV 数据，建立 Scatterplot、Timeline 等基础 D3 类，这部分相对顺利。</li>
+                    <li><strong>最耗时环节：多视图刷选与链接联动（约 8 小时）：</strong> 这是技术挑战最大的一环。由于没有使用 Vue/React 等响应式框架，我需要通过原生的 <code>CustomEvent</code> 建立事件总线（Event Bus），以确保在平行坐标系中 Brush 时，散点图、雷达图和数据表格能够高性能地实时更新，同时处理好未选中元素的透明度（Opacity）退散逻辑，避免视觉混乱。</li>
+                    <li><strong>UI/UX 优化与 Bug 修复（约 4 小时）：</strong> 调整响应式布局，将冗杂的双滑块替换为更精确的数字输入框，优化 Tooltip 的边界检测和渲染层级（防遮挡），撰写独立文档页并完成 GitHub Pages 部署。</li>
                 </ul>
             </section>
         </div>
