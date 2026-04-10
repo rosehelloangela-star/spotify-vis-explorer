@@ -132,6 +132,85 @@
         </div>
     </main>
  
+    <!-- 四大音乐特征说明 -->
+    <section class="feature-explainer">
+        <h2 class="feature-explainer-title">🎛️ Spotify 的四大音乐特征</h2>
+        <p class="feature-explainer-sub">这些数值由 Spotify 的机器学习模型分析音频信号得出，点击卡片查看每个特征的计算原理与含义。</p>
+
+        <div class="feat-grid" id="feat-grid"></div>
+
+        <div class="feat-detail-box" id="feat-detail">
+            <span class="feat-detail-placeholder">点击上方任意特征卡片，查看它的计算方式和实际含义</span>
+        </div>
+
+        <h3 class="feat-how-title">Spotify 是如何得到这些数值的？</h3>
+        <div class="feat-how-steps">
+            <div class="feat-how-row">
+                <div class="feat-how-num">1</div>
+                <div><strong>音频信号分析</strong> — 上传的 MP3/WAV 文件被分解为频谱图，提取响度、频率分布、节拍等原始信号特征。</div>
+            </div>
+            <div class="feat-how-row">
+                <div class="feat-how-num">2</div>
+                <div><strong>Echo Nest 机器学习模型</strong> — Spotify 于 2014 年收购的 Echo Nest 团队训练了多组分类/回归模型，把原始信号特征映射成 0–1 之间的语义分数。</div>
+            </div>
+            <div class="feat-how-row">
+                <div class="feat-how-num">3</div>
+                <div><strong>人工标注校准</strong> — 模型最初用人类打分数据训练（如"这首歌你会在派对上放吗？"），之后随着更多用户行为数据不断迭代校准。</div>
+            </div>
+            <div class="feat-how-row">
+                <div class="feat-how-num">4</div>
+                <div><strong>结果写入 Audio Features API</strong> — 最终数值通过 Spotify Web API 公开，这也是 Kaggle 数据集里这些列的来源。</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    (function() {
+        const features = [
+            {
+                name: '能量 Energy', sub: '感知强度与活跃程度', color: '#e74c3c', example: 0.82,
+                detail: '<strong>定义：</strong>0 到 1 之间，衡量一首歌听起来有多"猛"、多有冲劲。<br><br><strong>技术上怎么算：</strong>主要依赖响度（dB RMS）、音频动态范围、高频能量占比（高频意味着电吉他、鼓击）、起奏速度（onset rate）几个信号的加权组合。<br><br><strong>典型高值：</strong>死亡金属 ~0.95 &nbsp; EDM ~0.88<br><strong>典型低值：</strong>古典钢琴曲 ~0.10 &nbsp; 氛围音乐 ~0.15<br><br><strong>在数据集里：</strong>1920–1950 年代平均值约 0.30（以声学乐器为主），1980 年代后随电子乐普及升至 ~0.65。'
+            },
+            {
+                name: '舞蹈性 Danceability', sub: '适合跳舞的程度', color: '#2ecc71', example: 0.71,
+                detail: '<strong>定义：</strong>0 到 1 之间，衡量一首歌的节拍规律性、节奏稳定性、打击乐强度，综合判断"你能跟着跳吗"。<br><br><strong>技术上怎么算：</strong>节拍追踪器检测节拍规律性；节奏强度（由打击乐器主导的低中频脉冲）；节拍间隔变化量（越规律分越高）。<br><br><strong>典型高值：</strong>House ~0.87 &nbsp; Hip-Hop ~0.79<br><strong>典型低值：</strong>自由爵士 ~0.25 &nbsp; 交响乐 ~0.18<br><br><strong>注意：</strong>节奏快（tempo 高）≠ 舞蹈性高。一首 180BPM 的朋克可能舞蹈性很低；而 90BPM 的 R&amp;B 可能高达 0.85。'
+            },
+            {
+                name: '情绪 Valence', sub: '音乐传递的积极/消极感', color: '#3498db', example: 0.55,
+                detail: '<strong>定义：</strong>0 到 1 之间，0 = 极度悲伤/愤怒/阴郁，1 = 极度愉悦/欢快/积极。<br><br><strong>技术上怎么算：</strong>综合了调式（大调 vs 小调）、和弦走向（解决 vs 紧张）、音色亮度、歌词情感分析（通过 NLP，但权重较低），以及用户收听行为反馈。<br><br><strong>典型高值：</strong>夏日流行 ~0.90 &nbsp; 雷鬼 ~0.78<br><strong>典型低值：</strong>慢速民谣 ~0.12 &nbsp; 黑金属 ~0.08<br><br><strong>有意思的地方：</strong>高能量 + 低 valence = 愤怒（金属乐）；低能量 + 低 valence = 悲伤（慢歌）；高能量 + 高 valence = 快乐（派对音乐）。'
+            },
+            {
+                name: '声学性 Acousticness', sub: '是否以声学乐器为主', color: '#f39c12', example: 0.34,
+                detail: '<strong>定义：</strong>0 到 1 之间，1 = 几乎纯声学（木吉他、钢琴、人声），0 = 全电子/合成音色。这是一个置信度分数，不是简单的比例。<br><br><strong>技术上怎么算：</strong>检测频谱中电子处理的痕迹：失真、混响合成器特征、电子鼓的峰值形状、均衡曲线是否符合自然乐器的泛音结构。自然乐器的泛音有规律，合成器往往不同。<br><br><strong>典型高值：</strong>原声民谣 ~0.97 &nbsp; 古典 ~0.92<br><strong>典型低值：</strong>Techno ~0.02 &nbsp; 电子流行 ~0.08<br><br><strong>在时间线图里：</strong>这条线从 1920 年代的 ~0.85 一路下降到 1990 年代的 ~0.15，直观反映了录音技术和电声乐器的普及史。'
+            }
+        ];
+
+        const grid = document.getElementById('feat-grid');
+        const detail = document.getElementById('feat-detail');
+
+        features.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'feat-card';
+            card.innerHTML = `
+                <div class="feat-card-name">${f.name}</div>
+                <div class="feat-card-sub">${f.sub}</div>
+                <div class="feat-bar-wrap"><div class="feat-bar-fill" style="width:${f.example*100}%;background:${f.color}"></div></div>
+                <div class="feat-card-val">示例值 ${f.example}</div>
+            `;
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.feat-card').forEach(c => c.classList.remove('feat-card-active'));
+                card.classList.add('feat-card-active');
+                detail.style.opacity = '0';
+                setTimeout(() => {
+                    detail.innerHTML = f.detail;
+                    detail.style.opacity = '1';
+                }, 150);
+            });
+            grid.appendChild(card);
+        });
+    })();
+    </script>
+
     <footer>
         <div style="text-align: center; margin: 2rem 0;">
             <a href="document.html" target="_blank" class="doc-link">
