@@ -6,6 +6,22 @@
     <title>Spotify 音乐特征探索器</title>
     <link rel="stylesheet" href="css/style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        /* 补充说明面板的一些内联基础样式，防止错位 */
+        .feat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .feat-card { border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+        .feat-card:hover, .feat-card-active { border-color: var(--primary-color); background: #f0faf4; }
+        .feat-card-name { font-weight: bold; font-size: 13px; color: var(--secondary-color); }
+        .feat-card-sub { font-size: 11px; color: #636e72; margin-bottom: 6px; }
+        .feat-bar-wrap { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 4px; overflow: hidden; }
+        .feat-bar-fill { height: 100%; border-radius: 2px; }
+        .feat-card-val { font-size: 10px; color: #b2b2b2; text-align: right; }
+        .feat-detail-box { background: var(--bg-color); padding: 15px; border-radius: 8px; font-size: 13px; min-height: 130px; transition: opacity 0.2s; }
+        
+        /* 【终极对齐修复】防止气泡图无限放大撑高左侧方块，并强制卡片等高分布 */
+        #bar-chart svg { max-height: 430px; }
+        .align-card { display: flex; flex-direction: column; height: 100%; justify-content: space-between; }
+    </style>
 </head>
 <body>
     <header>
@@ -82,14 +98,39 @@
                 <div id="timeline"></div>
             </div>
 
-            <div class="chart-wrapper">
+            <div class="chart-wrapper align-card">
                 <h2>Top 10 艺术家 <span class="hint">（当前筛选条件下）</span></h2>
-                <div id="bar-chart"></div>
+                <div id="bar-chart" style="flex: 1; display: flex; align-items: center; justify-content: center;"></div>
             </div>
 
-            <div class="chart-wrapper">
-                <h2>音乐大小调分布 <span class="hint">（Major vs Minor）</span></h2>
-                <div id="donut-chart"></div>
+            <div class="chart-wrapper feature-explainer align-card">
+                <div>
+                    <h2 class="feature-explainer-title" style="margin-bottom: 10px;">🎛️ Spotify 的四大音乐特征</h2>
+                    <p class="feature-explainer-sub" style="font-size: 12px; color: #636e72; margin-bottom: 15px;">这些数值由 Spotify 的机器学习模型分析音频信号得出，点击卡片查看每个特征的计算原理与含义。</p>
+                    <div class="feat-grid" id="feat-grid"></div>
+                </div>
+
+                <div class="feat-detail-box" id="feat-detail">
+                    <span class="feat-detail-placeholder" style="color: #b2b2b2;">点击上方任意特征卡片，查看它的计算方式和实际含义</span>
+                </div>
+
+                <div>
+                    <h3 class="feat-how-title" style="margin-top: 15px; font-size: 14px; margin-bottom: 10px;">Spotify 是如何得到这些数值的？</h3>
+                    <div class="feat-how-steps" style="font-size: 12px; color: #2d3436;">
+                        <div class="feat-how-row" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <div class="feat-how-num" style="background: var(--primary-color); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: bold;">1</div>
+                            <div><strong>音频信号分析</strong> — 提取响度、频率分布、节拍等原始信号特征。</div>
+                        </div>
+                        <div class="feat-how-row" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <div class="feat-how-num" style="background: var(--primary-color); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: bold;">2</div>
+                            <div><strong>Echo Nest 机器学习</strong> — 将原始特征映射成 0–1 的语义分数。</div>
+                        </div>
+                        <div class="feat-how-row" style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <div class="feat-how-num" style="background: var(--primary-color); color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: bold;">3</div>
+                            <div><strong>人工标注校准</strong> — 用人类打分数据和海量用户行为数据不断校准。</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
  
@@ -131,57 +172,33 @@
             </div>
         </div>
     </main>
+
+    <footer>
+        <div style="text-align: center; margin: 2rem 0;">
+            <a href="document.html" target="_blank" class="doc-link">
+                📄 查看可视化设计与开发说明文档
+            </a>
+        </div>
+    </footer>
  
-    <!-- 四大音乐特征说明 -->
-    <section class="feature-explainer">
-        <h2 class="feature-explainer-title">🎛️ Spotify 的四大音乐特征</h2>
-        <p class="feature-explainer-sub">这些数值由 Spotify 的机器学习模型分析音频信号得出，点击卡片查看每个特征的计算原理与含义。</p>
-
-        <div class="feat-grid" id="feat-grid"></div>
-
-        <div class="feat-detail-box" id="feat-detail">
-            <span class="feat-detail-placeholder">点击上方任意特征卡片，查看它的计算方式和实际含义</span>
-        </div>
-
-        <h3 class="feat-how-title">Spotify 是如何得到这些数值的？</h3>
-        <div class="feat-how-steps">
-            <div class="feat-how-row">
-                <div class="feat-how-num">1</div>
-                <div><strong>音频信号分析</strong> — 上传的 MP3/WAV 文件被分解为频谱图，提取响度、频率分布、节拍等原始信号特征。</div>
-            </div>
-            <div class="feat-how-row">
-                <div class="feat-how-num">2</div>
-                <div><strong>Echo Nest 机器学习模型</strong> — Spotify 于 2014 年收购的 Echo Nest 团队训练了多组分类/回归模型，把原始信号特征映射成 0–1 之间的语义分数。</div>
-            </div>
-            <div class="feat-how-row">
-                <div class="feat-how-num">3</div>
-                <div><strong>人工标注校准</strong> — 模型最初用人类打分数据训练（如"这首歌你会在派对上放吗？"），之后随着更多用户行为数据不断迭代校准。</div>
-            </div>
-            <div class="feat-how-row">
-                <div class="feat-how-num">4</div>
-                <div><strong>结果写入 Audio Features API</strong> — 最终数值通过 Spotify Web API 公开，这也是 Kaggle 数据集里这些列的来源。</div>
-            </div>
-        </div>
-    </section>
-
     <script>
     (function() {
         const features = [
             {
                 name: '能量 Energy', sub: '感知强度与活跃程度', color: '#e74c3c', example: 0.82,
-                detail: '<strong>定义：</strong>0 到 1 之间，衡量一首歌听起来有多"猛"、多有冲劲。<br><br><strong>技术上怎么算：</strong>主要依赖响度（dB RMS）、音频动态范围、高频能量占比（高频意味着电吉他、鼓击）、起奏速度（onset rate）几个信号的加权组合。<br><br><strong>典型高值：</strong>死亡金属 ~0.95 &nbsp; EDM ~0.88<br><strong>典型低值：</strong>古典钢琴曲 ~0.10 &nbsp; 氛围音乐 ~0.15<br><br><strong>在数据集里：</strong>1920–1950 年代平均值约 0.30（以声学乐器为主），1980 年代后随电子乐普及升至 ~0.65。'
+                detail: '<strong>定义：</strong>0 到 1 之间，衡量一首歌听起来有多"猛"、多有冲劲。<br><br><strong>技术上怎么算：</strong>主要依赖响度、音频动态范围、高频能量占比（高频意味着电吉他、鼓击）等加权组合。<br><br><strong>典型高值：</strong>死亡金属 ~0.95 &nbsp; EDM ~0.88<br><strong>典型低值：</strong>古典钢琴曲 ~0.10 &nbsp; 氛围音乐 ~0.15'
             },
             {
                 name: '舞蹈性 Danceability', sub: '适合跳舞的程度', color: '#2ecc71', example: 0.71,
-                detail: '<strong>定义：</strong>0 到 1 之间，衡量一首歌的节拍规律性、节奏稳定性、打击乐强度，综合判断"你能跟着跳吗"。<br><br><strong>技术上怎么算：</strong>节拍追踪器检测节拍规律性；节奏强度（由打击乐器主导的低中频脉冲）；节拍间隔变化量（越规律分越高）。<br><br><strong>典型高值：</strong>House ~0.87 &nbsp; Hip-Hop ~0.79<br><strong>典型低值：</strong>自由爵士 ~0.25 &nbsp; 交响乐 ~0.18<br><br><strong>注意：</strong>节奏快（tempo 高）≠ 舞蹈性高。一首 180BPM 的朋克可能舞蹈性很低；而 90BPM 的 R&amp;B 可能高达 0.85。'
+                detail: '<strong>定义：</strong>0 到 1 之间，综合衡量节拍规律性、节奏稳定性、打击乐强度。<br><br><strong>技术上怎么算：</strong>通过节拍追踪器检测节拍规律性；测量由打击乐器主导的低中频脉冲。<br><br><strong>典型高值：</strong>House ~0.87 &nbsp; Hip-Hop ~0.79<br><strong>典型低值：</strong>自由爵士 ~0.25 &nbsp; 交响乐 ~0.18<br><br><strong>注意：</strong>节奏快（tempo高）不代表舞蹈性高。'
             },
             {
-                name: '情绪 Valence', sub: '音乐传递的积极/消极感', color: '#3498db', example: 0.55,
-                detail: '<strong>定义：</strong>0 到 1 之间，0 = 极度悲伤/愤怒/阴郁，1 = 极度愉悦/欢快/积极。<br><br><strong>技术上怎么算：</strong>综合了调式（大调 vs 小调）、和弦走向（解决 vs 紧张）、音色亮度、歌词情感分析（通过 NLP，但权重较低），以及用户收听行为反馈。<br><br><strong>典型高值：</strong>夏日流行 ~0.90 &nbsp; 雷鬼 ~0.78<br><strong>典型低值：</strong>慢速民谣 ~0.12 &nbsp; 黑金属 ~0.08<br><br><strong>有意思的地方：</strong>高能量 + 低 valence = 愤怒（金属乐）；低能量 + 低 valence = 悲伤（慢歌）；高能量 + 高 valence = 快乐（派对音乐）。'
+                name: '情绪 Valence', sub: '传递的积极/消极感', color: '#3498db', example: 0.55,
+                detail: '<strong>定义：</strong>0=极度悲伤/愤怒/阴郁，1=极度愉悦/欢快/积极。<br><br><strong>技术上怎么算：</strong>综合了调式（大/小调）、和弦走向、音色亮度、歌词情感分析等。<br><br><strong>典型高值：</strong>夏日流行 ~0.90 &nbsp; 雷鬼 ~0.78<br><strong>典型低值：</strong>慢速民谣 ~0.12 &nbsp; 黑金属 ~0.08'
             },
             {
                 name: '声学性 Acousticness', sub: '是否以声学乐器为主', color: '#f39c12', example: 0.34,
-                detail: '<strong>定义：</strong>0 到 1 之间，1 = 几乎纯声学（木吉他、钢琴、人声），0 = 全电子/合成音色。这是一个置信度分数，不是简单的比例。<br><br><strong>技术上怎么算：</strong>检测频谱中电子处理的痕迹：失真、混响合成器特征、电子鼓的峰值形状、均衡曲线是否符合自然乐器的泛音结构。自然乐器的泛音有规律，合成器往往不同。<br><br><strong>典型高值：</strong>原声民谣 ~0.97 &nbsp; 古典 ~0.92<br><strong>典型低值：</strong>Techno ~0.02 &nbsp; 电子流行 ~0.08<br><br><strong>在时间线图里：</strong>这条线从 1920 年代的 ~0.85 一路下降到 1990 年代的 ~0.15，直观反映了录音技术和电声乐器的普及史。'
+                detail: '<strong>定义：</strong>1=纯声学（木吉他、钢琴），0=全电子/合成音色。它是一个置信度分数。<br><br><strong>技术上怎么算：</strong>检测频谱中电子处理的痕迹（失真、混响合成器特征）。自然乐器的泛音有规律，合成器往往不同。<br><br><strong>典型高值：</strong>原声民谣 ~0.97 &nbsp; 古典 ~0.92<br><strong>典型低值：</strong>Techno ~0.02 &nbsp; 电子流行 ~0.08'
             }
         ];
 
@@ -211,19 +228,10 @@
     })();
     </script>
 
-    <footer>
-        <div style="text-align: center; margin: 2rem 0;">
-            <a href="document.html" target="_blank" class="doc-link">
-                📄 查看可视化设计与开发说明文档
-            </a>
-        </div>
-    </footer>
- 
     <script src="js/scatterplot.js"></script>
     <script src="js/parallel.js"></script>
     <script src="js/timeline.js"></script>
     <script src="js/bubblechart.js"></script> 
-    <script src="js/donutchart.js"></script> 
     <script src="js/main.js"></script>
 </body>
 </html>
