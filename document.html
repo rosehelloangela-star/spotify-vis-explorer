@@ -78,7 +78,7 @@
 
             <section>
                 <h3>⏱️ 4. 开发流程概述 (Development Process)</h3>
-                <p>本项目的开发分为数据预处理、视图独立开发、交互状态管理及 UI 打磨四个阶段。<strong>总耗时约 35 工时</strong>。</p>
+                <p>本项目的开发分为数据预处理、视图独立开发、交互状态管理及 UI 打磨四个阶段。<strong>总耗时约 17 工时</strong>。</p>
                 <ul>
                     <li><strong>数据处理与视图基础构建（约 4 小时）：</strong> 清洗 CSV 数据，建立 Scatterplot、Timeline 等基础 D3 类，这部分相对顺利。</li>
                     <li><strong>最耗时环节：多视图刷选与链接联动（约 10 小时）：</strong> 这是技术挑战最大的一环。由于没有使用 Vue/React 等响应式框架，我需要通过原生的 <code>CustomEvent</code> 建立事件总线（Event Bus），以确保在平行坐标系中 Brush 时，散点图、雷达图和数据表格能够高性能地实时更新，同时处理好未选中元素的透明度（Opacity）退散逻辑，避免视觉混乱。</li>
